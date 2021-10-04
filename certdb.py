@@ -11,6 +11,7 @@ class Module(BaseModule):
         ),
         'required_keys': ['certdb_key'],
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, companies):
@@ -18,18 +19,17 @@ class Module(BaseModule):
         key = self.get_key('certdb_key')
         for company in companies:
             self.heading(company, level=0)
-            resp = self.request('https://certdb.net/api',
-                                 method='POST',
-                                 payload={'api_key': key,
-                                          'q': 'Organization:%s' % company.replace(' ', '+')})
+            resp = self.request('POST', 'https://certdb.net/api',
+                                 json={'api_key': key,
+                                       'q': 'Organization:%s' % company.replace(' ', '+')})
             if resp.status_code != 200:
                 self.error('Error seen with company: {0}'.format(company))
                 continue
-            for cert in resp.json:
+            for cert in resp.json():
                 h = cert['subject'].get('CN', None)
                 if h:
-                    self.add_hosts(host=h)
+                    self.insert_hosts(host=h)
                 e = cert['subject'].get('emailAddress', None)
                 if e:
-                    self.add_contacts(email=e)
+                    self.insert_contacts(email=e)
             

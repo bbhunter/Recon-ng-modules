@@ -14,6 +14,7 @@ class Module(BaseModule):
             ('filename', None, True, 'Path and filename for theHarvester XML input'),
             ('domain', None, True, 'Filter all data endswith domain name'),
         ),
+        'version': '1.1',
     }
 
     def get_name(self, email, title):
@@ -44,23 +45,23 @@ class Module(BaseModule):
                         ip = host.find('ip')
                         if hostname and ip:
                             if hostname.string.endswith(domain):
-                                self.add_hosts(ip_address=ip.string, host=hostname.string)
+                                self.insert_hosts(ip_address=ip.string, host=hostname.string)
                         else:
                             if host.string.endswith(domain):
-                                self.add_hosts(host.string)
+                                self.insert_hosts(host.string)
 
                     for vhost in soup.find_all('vhost'):
                         hostname = host.find('hostname')
                         ip = host.find('ip')
                         if hostname and ip:
                             if hostname.string.endswith(domain):
-                                self.add_hosts(ip_address=ip.string, host=hostname.string)
+                                self.insert_hosts(ip_address=ip.string, host=hostname.string)
                         else:
                             if vhost.string.endswith(domain):
-                                self.add_hosts(vhost.string)
+                                self.insert_hosts(vhost.string)
 
                     for email in soup.find_all('email'):
                         if email.string.split('@')[0]:
                             if email.string.endswith(domain):
                                 user_data = self.get_name(email.string, 'theHarvester import')
-                                self.add_contacts(**user_data)
+                                self.insert_contacts(**user_data)

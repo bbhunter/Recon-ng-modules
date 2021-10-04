@@ -7,6 +7,7 @@ class Module(BaseModule):
         'author': 'jose nazario @jnazario',
         'description': 'Retrieves hosts sharing the same IP from the DNSTrails data set. Updates the \'hosts\' and `domains` tables. This is an unauthenticated use of their API and is rate limited.',
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
+        'version': '1.1',
     }
     
     def _fmt_hostname(self, host, domain):
@@ -23,11 +24,11 @@ class Module(BaseModule):
             try:
                 resp = self.request(url)
                 if resp.status_code == 200:
-                    hosts = map(lambda x: self._fmt_hostname(x['host'], x['domain']), resp.json['result']['items'])
-                    domains = set([ x['domain'] for x in resp.json['result']['items']])
+                    hosts = map(lambda x: self._fmt_hostname(x['host'], x['domain']), resp.json()['result']['items'])
+                    domains = set([ x['domain'] for x in resp.json()['result']['items']])
                     for host in hosts:
-                        self.add_hosts(host=host, ip_address=ip) 
+                        self.insert_hosts(host=host, ip_address=ip) 
                     for domain in domains:
-                        self.add_domains(domain)
+                        self.insert_domains(domain)
             except:
                 self.error("Error received. Try again later, API limits probably hit.")

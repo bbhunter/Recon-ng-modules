@@ -10,15 +10,16 @@ class Module(BaseModule):
         'description': 'Leverages the ipinfo.io API to geolocate a host by IP address. Updates the \'hosts\' table with the results.',
         'required_keys': ['ipinfo_api'],
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, hosts):
         api_key = self.get_key('ipinfo_api')
         for host in hosts:
             url = 'http://ipinfo.io/%s/json?key=%s' % (host, api_key)
-            resp = self.request(url)
+            resp = self.request('GET', url)
             if resp.json:
-                jsonobj = resp.json
+                jsonobj = resp.json()
             else:
                 self.error('Invalid JSON response for \'%s\'.\n%s' % (host, resp.text))
                 continue

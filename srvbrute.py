@@ -14,6 +14,7 @@ class Module(BaseModule, ResolverMixin):
             'then stored in the hosts and ports tables.'
         ),
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -51,8 +52,8 @@ class Module(BaseModule, ResolverMixin):
                         port = record.port
                         if record.rdtype != 33:
                             continue
-                        self.add_ports(host=target, port=port, protocol=protocol)
-                        self.add_hosts(host=target)
+                        self.insert_ports(host=target, port=port, protocol=protocol)
+                        self.insert_hosts(host=target)
                 except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
                     self.verbose('%s => No record found.' % ('%s%s' % (srvname, domain)))
                 except dns.resolver.Timeout:

@@ -12,6 +12,7 @@ class Module(BaseModule):
         'author': 'Zach Grace (@ztgrace)',
         'description': 'Perform Zone Transfers against each NS record for a domain',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def get_NS_records(self, domain):
@@ -65,4 +66,4 @@ class Module(BaseModule):
                         if parsed['rtype'] in ("A", "AAAA", "CNAME"):
                             fqdn = ".".join((parsed['name'], domain))
                             self.output(fqdn)
-                            self.add_hosts(host=fqdn)
+                            self.insert_hosts(host=fqdn)

@@ -1,4 +1,4 @@
-BeautifulSoup
+beautifulsoup4
 certstream
 dicttoxml
 dnspython
@@ -11,3 +11,5 @@ PyPDF2
 requests
 sslyze
 xlsxwriter
+pyaes
+PyPDF3

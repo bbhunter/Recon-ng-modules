@@ -10,6 +10,7 @@ class Module(BaseModule):
         'author': 'ScumSec @0x1414',
         'description': 'Crawls email-format.com for contacts based on search by domain. Updates the \'contacts\' table.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def get_name(self, email, title):
@@ -29,8 +30,8 @@ class Module(BaseModule):
 
     def get_emails(self, domain):
         emails = []
-        host = 'http://www.email-format.com/d/%s' % domain
-        resp = self.request(host)
+        url = f'http://www.email-format.com/d/{domain}'
+        resp = self.request('GET', url)
         for element in resp.raw.split("<div class='fl'>")[1:]:
             emails.append(re.sub('[ \n\t]+', '', element.split('</div>')[0]))
         return emails
@@ -41,5 +42,5 @@ class Module(BaseModule):
             new_emails = self.get_emails(domain)
             for new_email in new_emails:
                 contact = self.get_name(new_email, 'Email-Format contact')
-                self.add_contacts(**(contact))
+                self.insert_contacts(**(contact))
             time.sleep(1)

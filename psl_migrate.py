@@ -10,7 +10,7 @@ class Module(BaseModule):
         'comments': (
             'This module uses the PSL to find domains from hostnamnes',
         ),
-        'required_keys': ['whoxy_key'],
+        'version': '1.1',
         'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL'
     }
     
@@ -24,5 +24,5 @@ class Module(BaseModule):
             if domain in seen:
                 continue
             else:
-                self.add_domains(domain)
+                self.insert_domains(domain)
                 seen.add(domain)

@@ -1,7 +1,7 @@
 from recon.core.module import BaseModule
 import os
 import time
-import urllib
+from urllib.parse import urlparse
 
 class Module(BaseModule):
     meta = {
@@ -12,6 +12,7 @@ class Module(BaseModule):
         'options': (
            ('sleep', 60, False, 'Time to sleep between searches to avoid lockout'),
         ),
+        'version': '1.1',
     }
 
     # via https://www.hackerone.com/blog/how-to-recon-and-content-discovery
@@ -23,13 +24,13 @@ class Module(BaseModule):
                 query = '%s %s' % (domain, dork)
                 for result in self.search_github_api(query):
                     data = {
-                        'host': urllib.urlparse(result['html_url']).netloc,
+                        'host': urlparse(result['html_url']).netloc,
                         'reference': domain,
                         'example': result['html_url'],
                         'category': dork,
                     }
                     for key in sorted(data.keys()):
                         self.output('%s: %s' % (key.title(), data[key]))
-                    self.add_vulnerabilities(**data)
+                    self.insert_vulnerabilities(**data)
                     print(self.ruler*50)
                 time.sleep(self.options['sleep'])

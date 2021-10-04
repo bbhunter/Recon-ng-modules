@@ -1,6 +1,6 @@
 from recon.core.module import BaseModule
 #from recon.utils.parsers import parse_hostname
-from urlparse import urlparse
+from urllib.parse import urlparse
 import requests
 import re
 
@@ -11,7 +11,8 @@ class Module(BaseModule):
         'author': 'Vlad Styran (@c2FwcmFu)',
         'description': 'Leverages the RiskIQ Passive Total API to list DNS subdomains. Updates the \'hosts\' table with the results. Requires your account API username and secret, obtain at https://www.passivetotal.org/settings.',
         'required_keys': ['passivetotal_username', 'passivetotal_secret'],
-        'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL'
+        'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def query_passivetotal_api(self, path, query):
@@ -40,4 +41,4 @@ class Module(BaseModule):
             for host in results:
                 if host.endswith('.'+domain) and host not in hosts:
                     hosts.append(host)
-                    self.add_hosts(host)
+                    self.insert_hosts(host)

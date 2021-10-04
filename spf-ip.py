@@ -14,6 +14,7 @@ class Module(BaseModule, ResolverMixin):
             'and/or netblocks table.'
         ),
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -43,13 +44,13 @@ class Module(BaseModule, ResolverMixin):
                                     ipaddr = item.split(':', 1)[1]
                                     if "/" in ipaddr:
                                         self.output(ipaddr)
-                                        self.add_netblocks(ipaddr)
+                                        self.insert_netblocks(ipaddr)
                                     else:
                                         self.output(ipaddr)
-                                        self.add_hosts(ip_address=ipaddr)
+                                        self.insert_hosts(ip_address=ipaddr)
                                 elif "a:" in item:
                                     spfhost = item.split(':', 1)[1]
                                     self.output(spfhost)
-                                    self.add_hosts(host=spfhost)
+                                    self.insert_hosts(host=spfhost)
                 # break out of the loop
                 attempt = max_attempts

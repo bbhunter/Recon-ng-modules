@@ -16,6 +16,7 @@ class Module(BaseModule):
         'query': 'SELECT DISTINCT host FROM hosts WHERE host IS NOT NULL',
         'options': (
         ),
+        'version': '1.1',
     }
     
     # http://viewdns.info/api/docs/port-scanner.php
@@ -28,14 +29,15 @@ class Module(BaseModule):
             params = {'key': key,
                       'host': host,
                       'output': 'json'}
-            params = urllib.urlencode(params)
+            params = urlencode(params)
             url = "%s?%s" % (base_url, params)
-            resp = self.request(url)
+            resp = self.request('GET', url)
             if resp.status_code != 200 or resp.json is None:
                 continue
-            for info in resp.json['respose']['port']:
+            resp = resp.json()
+            for info in resp['respose']['port']:
                 if info['status'] != 'open':
                     continue
-                self.add_ports(host=host,
+                self.insert_ports(host=host,
                                port=info['number'],
                                protocol=info['service'].lower())

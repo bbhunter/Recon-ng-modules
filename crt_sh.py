@@ -10,6 +10,7 @@ class Module(BaseModule):
         'author': 'jose nazario @jnazario',
         'description': 'Retrieves subdomains using crt.sh, searching through Certificate Transparency logs. Updates the hosts table.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
 
@@ -28,4 +29,4 @@ class Module(BaseModule):
                         entries_raw = entry["summary"][:entry["summary"].index(cur_break)].replace("&nbsp;", "\n")
                 for e in entries_raw.split("\n"):
                     new_domains.add(str(e.strip()))
-        map(self.add_hosts, filter(lambda x: not x.startswith('*'), new_domains))
+        map(self.insert_hosts, filter(lambda x: not x.startswith('*'), new_domains))

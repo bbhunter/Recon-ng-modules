@@ -84,6 +84,9 @@ cp otx_pulse_pdns.py ~/.recon-ng/modules/recon/hosts-hosts
 cp robtex.py ~/.recon-ng/modules/recon/hosts-hosts
 cp srvbrute.py ~/.recon-ng/modules/recon/hosts-hosts
 
+mkdir -p ~/.recon-ng/modules/recon/netblocks-netblocks
+cp rdap.py ~/.recon-ng/modules/recon/netblocks-netblocks
+
 mkdir -p ~/.recon-ng/modules/recon/netblocks-hosts
 cp zoomeye_net.py ~/.recon-ng/modules/recon/netblocks-hosts
 
@@ -98,7 +101,7 @@ cp bitbucket_profile.py ~/.recon-ng/modules/recon/profiles-profiles
 
 # probes are direct contact with the host to assess vulns
 mkdir -p ~/.recon-ng/modules/probe/hosts-vulnerabilities/
-cp tls_analyze.py  ~/.recon-ng/modules/probe/hosts-vulnerabilities/
+# cp tls_analyze.py  ~/.recon-ng/modules/probe/hosts-vulnerabilities/
 
 for key in `echo "bulkwhoisapi_key
 censysio_id

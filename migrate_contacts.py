@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'Tim Tomes (@LaNMaSteR53)',
         'description': 'Coverts from contacts to profiles after using the dev_diver module.',
         'query': 'SELECT DISTINCT first_name, middle_name, last_name, title FROM contacts WHERE title like "% Contributor" AND module = "dev_diver"',
+        'version': '1.1',
     }
 
     def module_run(self, names):
@@ -22,4 +23,5 @@ class Module(BaseModule):
             username = '%s%s%s' % (fname or '', mname or '', lname or '')
             url = URLS[title] % username
             resource = title.split()[0]
-            self.add_profiles(username=username, url=url, resource=resource, category=title)
+            self.heading(f'{name} -> {username}')
+            self.insert_profiles(username=username, url=url, resource=resource, category=title)

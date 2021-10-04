@@ -34,6 +34,7 @@ class Module(BaseModule):
         'author': 'jose nazario @jnazario',
         'description': 'Contacts hosts with common TLS services (HTTPS, IMAPS, etc) open and evaluates the TLS configuration for flaws and known vulnerabilities. Updates the \'vulnerabilities\' table.',
         'query': 'SELECT DISTINCT host, port, ip_address FROM ports WHERE port in {} AND host NOT NULL AND ip_address NOT NULL'.format(str(tuple(sorted(STARTTLS_PROTOCOL_DICT.keys())))),
+        'version': '1.1',
     }
 
     def module_run(self, hostportsip):
@@ -100,5 +101,5 @@ class Module(BaseModule):
                     data['category'] = 'TLS vulnerability'
                     for key in sorted(data.keys()):
                         self.output('%s: %s' % (key.title(), data[key]))
-                    self.add_vulnerabilities(**data)
+                    self.insert_vulnerabilities(**data)
                     self.output(self.ruler*50)

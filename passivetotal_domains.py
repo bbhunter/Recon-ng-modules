@@ -1,6 +1,5 @@
 from recon.core.module import BaseModule
 import requests
-from urlparse import urlparse
 import re
 
 class Module(BaseModule):
@@ -11,6 +10,7 @@ class Module(BaseModule):
         'description': 'Leverages the RiskIQ Passive Total API to list DNS domain based no contact emails. Updates the \'domains\' table with the results. Requires your account API username and secret, obtain at https://www.passivetotal.org/settings.',
         'required_keys': ['passivetotal_username', 'passivetotal_secret'],
         'query': 'SELECT DISTINCT email FROM contacts WHERE email IS NOT NULL',
+        'version': '1.1',
         }
 
     def get_passivetotal_whois(self, query, field):
@@ -35,4 +35,4 @@ class Module(BaseModule):
             self.heading(email, level=0)
             results = self.get_passivetotal_whois(email, 'email')
             for domain in results:
-                self.add_domains(domain)
+                self.insert_domains(domain)

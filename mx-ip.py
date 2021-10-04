@@ -13,6 +13,7 @@ class Module(BaseModule, ResolverMixin):
             'associated with each domain. The hostnames are then stored in the hosts table.'
         ),
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -39,6 +40,6 @@ class Module(BaseModule, ResolverMixin):
                         host = str(host)
                         host = host[:-1]
                         self.output(host)
-                        self.add_hosts(host)
+                        self.insert_hosts(host)
                 # break out of the loop
                 attempt = max_attempts

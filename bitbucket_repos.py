@@ -1,5 +1,4 @@
 from recon.core.module import BaseModule
-from urllib import quote_plus
 
 class Module(BaseModule):
     meta = {
@@ -7,15 +6,16 @@ class Module(BaseModule):
         'author': 'j nazario (jnazario)',
         'description': 'Uses the Bitbucket API to enumerate repositories and snippets owned by a Bitbucket user. Updates the \'repositories\' table with the results.',
         'query': "SELECT DISTINCT username FROM profiles WHERE username IS NOT NULL AND resource LIKE 'Bitbucket'",
+        'version': '1.1',
     }
     
     def module_run(self, users):
         for user in users:
             self.heading(user, level=0)
-            resp = self.request('https://bitbucket.org/api/2.0/users/{}'.format(user))
+            resp = self.request('GET', 'https://bitbucket.org/api/2.0/users/{}'.format(user))
             if resp.status_code == 200:
                 self.heading('Repositories', level=1)
-                repos = self.request(resp.json['links']['repositories']['href'])
+                repos = self.request('GET', resp.json()['links']['repositories']['href'])
                 if repos.status_code == 200:
                     for repo in repos.json['values']:
                         data = {
@@ -27,9 +27,9 @@ class Module(BaseModule):
                             'category': 'repo'
                         }
                         self.output('%s - %s' % (repo['name'], repo['description']))
-                        self.add_repositories(**data)
+                        self.insert_repositories(**data)
                 self.heading('Snippets', level=1)
-                snippets = self.request(resp.json['links']['snippets']['href'])
+                snippets = self.request('GET', resp.json()['links']['snippets']['href'])
                 if snippets.status_code == 200:
                     for snippet in snippets.json['values']:
                         # TODO

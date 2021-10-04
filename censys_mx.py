@@ -8,6 +8,7 @@ class Module(BaseModule):
         'author': 'ScumSec 0x1414',
         'description': 'Retrieves the MX records for a domain. Updates the \'hosts\' and the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -16,18 +17,18 @@ class Module(BaseModule):
         base_url = 'https://censys.io/api/v1/search/ipv4'
         for domain in domains:
             self.heading(domain, level=0)
-            payload = json.dumps({'query': 'mx:%s' % domain})
-            resp = self.request(base_url, payload=payload, auth=(api_id, api_secret), method='POST', content='JSON')
+            payload = {'query': 'mx:%s' % domain}
+            resp = self.request('POST', base_url, json=payload, auth=(api_id, api_secret))
             # print resp.json
             if resp.status_code == 200:
-                pages = resp.json['metadata']['pages']
+                pages = resp.json()['metadata']['pages']
 
-                for element in resp.json['results']:
+                for element in resp.json()['results']:
                     ip_address = element['ip']
-                    self.add_hosts(ip_address=ip_address)
+                    self.insert_hosts(ip_address=ip_address)
                     for protocol in element['protocols']:
                         port, service = protocol.split('/')
-                        self.add_ports(ip_address=ip_address, port=port, protocol=service)
+                        self.insert_ports(ip_address=ip_address, port=port, protocol=service)
                 
                 if pages > 1:
                     for i in range(pages)[1:]:
@@ -35,12 +36,12 @@ class Module(BaseModule):
                         payload = json.dumps({'page': page_id, 'query': 'mx:%s' % domain})
                         resp = self.request(base_url, payload=payload, auth=(api_id, api_secret), method='POST', content='JSON')
                         if resp.status_code == 200:
-                            for element in resp.json['results']:
+                            for element in resp.json()['results']:
                                 ip_address = element['ip']
-                                self.add_hosts(ip_address=ip_address)
+                                self.insert_hosts(ip_address=ip_address)
                                 for protocol in element['protocols']:
                                     port, service = protocol.split('/')
-                                    self.add_ports(ip_address=ip_address, port=port, protocol=service)
+                                    self.insert_ports(ip_address=ip_address, port=port, protocol=service)
 
             else:
                 self.output('%s => Bad request!' % domain)

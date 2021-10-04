@@ -12,6 +12,7 @@ class Module(BaseModule):
         'options': (
             ('filename', None, True, 'Path and filename for nmap XML input'),
         ),
+        'version': '1.1',
     }
     
     def module_run(self):
@@ -31,7 +32,7 @@ class Module(BaseModule):
                         continue
                     port = curr_port.get('portid')
                     protocol = curr_port.get('protocol')
-                    cnt += self.add_ports(ip_address=addr, port=port, protocol=protocol)
+                    cnt += self.insert_ports(ip_address=addr, port=port, protocol=protocol)
             except AttributeError:
                 pass
         self.output('{} new records added.'.format(cnt))

@@ -10,6 +10,7 @@ class Module(BaseModule):
             '',
         ),
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, hosts):
@@ -23,4 +24,5 @@ class Module(BaseModule):
                 if len(r['metadata'].get('rdns_parent', '')) > 0:
                     try: domains.add(r['metadata']['rdns_parent'])
                     except KeyError: pass
-        for domain in domains: self.add_domains(domain)
+        for domain in domains: 
+            self.insert_domains(domain)

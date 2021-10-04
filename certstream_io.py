@@ -13,7 +13,8 @@ class Module(BaseModule):
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'comments': (
             'Because the Certstream data is never ending, this only listens for 1000 records a run.',
-        )
+        ),
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -31,4 +32,4 @@ class Module(BaseModule):
             certstream.listen_for_events(_cb)
         except (StopIteration, KeyboardInterrupt):
             for new_domain in new_domains:
-                self.add_domains(new_domain)
+                self.insert_domains(new_domain)

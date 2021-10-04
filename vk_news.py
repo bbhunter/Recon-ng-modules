@@ -12,7 +12,9 @@ class Module(BaseModule):
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'comments': (
             'Three requests per second.',
-        )
+        ),
+        'required_keys': ['vk_key'],
+        'version': '1.1',
     }
 
     def get_emails(self, text):
@@ -45,19 +47,20 @@ class Module(BaseModule):
         for domain in domains:
             self.heading(domain, level=0)
             payload = {'v': '5.12', 'access_token': access_token, 'lang': 3, 'count': 200, 'q': '@' + domain}
-            resp = self.request(base_url, payload=payload)
+            resp = self.request('POST', base_url, json=payload)
             # print resp.json
             if resp.status_code == 200:
-                count = resp.json['response']['count']
-                # print len(resp.json['response']['items'])
-                for post in resp.json['response']['items']:
+                data = resp.json()
+                count = data.get('response', {}).get('count', 0)
+                # print len(resp.json()['response']['items'])
+                for post in data['response']['items']:
                     text = post['text']
                     emails = self.get_emails(text)
                     for email in emails:
                         if email.split('@')[0]:
                             if email.endswith(domain):
                                 user_info = self.get_name(email, 'VK.com newsfeed')
-                                self.add_contacts(**user_info)
+                                self.insert_contacts(**user_info)
                 if count > 200:
                     iterations = count // 200
                     if iterations > 4:
@@ -66,18 +69,17 @@ class Module(BaseModule):
                         payload = {'v': '5.12', 'access_token': access_token, 'lang': 3, 'count': 200,
                                    'q': '@' + domain, 'offset': 200*i}
                         # print 'OFFSET' + str(200*i)
-                        resp = self.request(base_url, payload=payload)
+                        resp = self.request('POST', base_url, json=payload)
                         # print resp.json
                         if resp.status_code == 200:
-                            # print len(resp.json['response']['items'])
-                            for post in resp.json['response']['items']:
-
+                            # print len(resp.json()['response']['items'])
+                            for post in resp.json().get('response', {}).get('items', []):
                                 text = post['text']
                                 emails = self.get_emails(text)
                                 for email in emails:
                                     if email.split('@')[0]:
                                         if email.endswith(domain):
                                             user_info = self.get_name(email, 'VK.com newsfeed')
-                                            self.add_contacts(**user_info)
+                                            self.insert_contacts(**user_info)
                         time.sleep(0.34)
             time.sleep(0.34)

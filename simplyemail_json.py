@@ -12,6 +12,7 @@ class Module(BaseModule):
         'options': (
             ('filename', None, True, 'Path and filename for SimplyEmail JSON input'),
         ),
+        'version': '1.1',
     }
 
     def get_name(self, email, title):
@@ -46,4 +47,4 @@ class Module(BaseModule):
                     continue
                 else:
                     user_data = self.get_name(email, title)
-                    self.add_contacts(**user_data)
+                    self.insert_contacts(**user_data)

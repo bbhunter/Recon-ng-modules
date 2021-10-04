@@ -1,6 +1,6 @@
 from recon.core.module import BaseModule
 import requests
-from urlparse import urlparse
+from urllib.parse import urlparse
 import re
 
 class Module(BaseModule):
@@ -11,6 +11,7 @@ class Module(BaseModule):
         'description': 'Leverages the RiskIQ Passive Total API to list domain contacts based on domains. Updates the \'contacts\' table with the results. Requires your account API username and secret, obtain at https://www.passivetotal.org/settings.',
         'required_keys': ['passivetotal_username', 'passivetotal_secret'],
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
         }
 
     def get_passivetotal_whois(self, query, field):
@@ -25,7 +26,7 @@ class Module(BaseModule):
         data = response.json()
         res = []
         if not data.has_key('results'):
-            print data
+            print(data)
         for result in data.get('results', []):
             try: res.append(result['contactEmail'])
             except KeyError: pass
@@ -36,4 +37,4 @@ class Module(BaseModule):
             self.heading(domain, level=0)
             results = self.get_passivetotal_whois(domain, 'domain')
             for email in results:
-                self.add_contacts(email=email)
+                self.insert_contacts(email=email)

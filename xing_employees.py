@@ -3,7 +3,7 @@ import csv
 import json
 from string import ascii_uppercase
 from lxml import html
-from urllib2 import HTTPError
+from urllib.error import HTTPError
 
 class Module(BaseModule):
     meta = {
@@ -15,6 +15,7 @@ class Module(BaseModule):
             ('limit', 500, True, 'Limit of employees per letter'),
          ),
         'query': 'SELECT DISTINCT company FROM companies WHERE company IS NOT NULL',
+        'version': '1.1',
     }
 
     __xing_cookie = None
@@ -33,10 +34,13 @@ class Module(BaseModule):
     def module_run(self, companies):
         self.__init_options()
         for company in companies:
+            self.heading(company, level=0)
             for slug in self.__url_variants:
+                self.heading(slug, level=2)
                 self.__query_xing(company,slug)
 
     def __parse_data(self,jsondata):
+        print(jsondata)
         if not jsondata or len(jsondata) == 0:    
             return
         k = list(jsondata["contacts"].keys())
@@ -78,11 +82,11 @@ class Module(BaseModule):
             employee_username = employee_username.split('/')
             employee_profile_link = self.__xing_url  + "/profile/" + employee_username[0];
             
-            self.add_profiles(username=employee_username[0], url=employee_profile_link, resource='Xing', category='social')            
+            self.insert_profiles(username=employee_username[0], url=employee_profile_link, resource='Xing', category='social')            
             if employee_middle:
-                self.add_contacts(first_name=self.__normalize_name(employee_first), middle_name =self. __normalize_name(employee_middle), last_name=self.__normalize_name(employee_last), title=self.__normalize_name(position[0]))
+                self.insert_contacts(first_name=self.__normalize_name(employee_first), middle_name =self. __normalize_name(employee_middle), last_name=self.__normalize_name(employee_last), title=self.__normalize_name(position[0]))
             else:
-                self.add_contacts(first_name=self.__normalize_name(employee_first), last_name=self.__normalize_name(employee_last), title=self.__normalize_name(position[0]))
+                self.insert_contacts(first_name=self.__normalize_name(employee_first), last_name=self.__normalize_name(employee_last), title=self.__normalize_name(position[0]))
 
 
     def __init_options(self):
@@ -111,7 +115,7 @@ class Module(BaseModule):
             url = self.__xing_url + '/' + slug + '/' + company.replace(" ","").lower() + '/employees.json?filter=all&letter=' + c +'&limit=500&offset=0'
             self.debug("Retrieving url: " + url)
             try:
-                r = self.request(url=url,headers=headers)
+                r = self.request('GET', url=url,headers=headers)
             except HTTPError as exception:
                 self.debug("Could not retrieve url.")
                 continue
@@ -119,4 +123,4 @@ class Module(BaseModule):
                 self.debug("No data retrieved.")
                 continue
             else:
-                self.__parse_data(r.json)
+                self.__parse_data(r.json())

@@ -1,5 +1,5 @@
 import base64
-import urllib
+from urllib.parse import urlencode
 
 import requests
 
@@ -17,6 +17,7 @@ class Module(BaseModule):
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
         'options': (
         ),
+        'version': '1.1',
     }
     
     def module_run(self, domains):
@@ -31,10 +32,10 @@ class Module(BaseModule):
                      "key": key,
                      "page": 1,
                      "fields": fields}
-            param = urllib.urlencode(param)
+            param = urlencode(param)
             url = "%s%s?%s" % (base_url, search_api_url, param)
-            resp = self.request(url)
-            if resp.json['error']:
-                self.error('Error seen: %s' % resp.json['errmsg'])
+            resp = self.request('GET', url).json()
+            if resp['error']:
+                self.error('Error seen: %s' % resp.json()['errmsg'])
             else:
-                print resp.json
+                print(resp)

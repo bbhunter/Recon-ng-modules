@@ -11,6 +11,7 @@ class Module(BaseModule):
         'author': 'jose nazario @jnazario',
         'description': 'Retrieves subdomains by enumerating DNS zone entries based on DNSSEC NSEC chains.  It can be used to discover hosts in a DNS zone quickly and with a minimum amount of queries if said zone is DNSSEC-enabled. Updates the \'domains\' table.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
         }
 
     def module_run(self, domains):
@@ -41,4 +42,4 @@ class Module(BaseModule):
                 latest = trim(ans.rrset.items[0].to_text().split()[0])                
                 self.output('FOUND %s' % latest)
             allresults = allresults ^ seen
-            [ self.add_domains(x) for x in allresults ]
+            [ self.insert_domains(x) for x in allresults ]

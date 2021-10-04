@@ -1,5 +1,5 @@
 from recon.core.module import BaseModule
-from urlparse import urlparse
+from urllib.parse import urlparse
 import re
 # TODO CHECK
 
@@ -9,11 +9,12 @@ class Module(BaseModule):
         'author': 'Zach Grace (@ztgrace)',
         'description': 'Uses the ARIN Whois RWS to get the netblock and company for an IP address',
         'query': 'SELECT DISTINCT ip_address FROM hosts WHERE ip_address IS NOT NULL',
+        'version': '1.1',
     }
 
     def get_orgRef(self, resp):
         try:
-            handle = resp.json['ns4:pft']['net']['orgRef']['@handle']
+            handle = resp['ns4:pft']['net']['orgRef']['@handle']
         except KeyError:
             return None
 
@@ -39,38 +40,38 @@ class Module(BaseModule):
                 'http://whois.arin.net/ui/query.do'
             ]
             for url in urls:
-                self.verbose('URL: %s' % url)
-                resp = self.request(url, headers=headers, payload=payload)
+                self.verbose(f'URL: {url}')
+                resp = self.request('POST', url, headers=headers, data=payload).json()
 
                 if self.get_orgRef(resp) == 'APNIC' or self.get_orgRef(resp) == 'RIPE' or self.get_orgRef(
                         resp) == 'LACNIC' or self.get_orgRef(resp) == 'AFRINIC':
-                    self.output('Error, %s is %s.' % (ip, resp.json['ns4:pft']['net']['orgRef']['@name']))
+                    self.output('Error, %s is %s.' % (ip, resp['ns4:pft']['net']['orgRef']['@name']))
                     continue
 
                 try:  # Reallocated IP space
-                    org = resp.json['ns4:pft']['customer']['name']['$']
-                    handle = resp.json['ns4:pft']['customer']['handle']['$']
-                except KeyError, ke:
+                    org = resp['ns4:pft']['customer']['name']['$']
+                    handle = resp['ns4:pft']['customer']['handle']['$']
+                except KeyError as ke:
                     try:  # Direct allocation
-                        org = resp.json['ns4:pft']['net']['orgRef']['@name']
-                        handle = resp.json['ns4:pft']['net']['orgRef']['@handle']
-                    except KeyError, ke:
+                        org = resp['ns4:pft']['net']['orgRef']['@name']
+                        handle = resp['ns4:pft']['net']['orgRef']['@handle']
+                    except KeyError as ke:
                         self.output("Error querying %s" % ip)
                         continue
 
-                self.add_companies(company=org, description=handle)
+                self.insert_companies(company=org, description=handle)
                 self.query('UPDATE hosts SET company=? WHERE ip_address=?', (org, ip))
 
-                netblocks = resp.json['ns4:pft']['net']['netBlocks']['netBlock']
+                netblocks = resp['ns4:pft']['net']['netBlocks']['netBlock']
                 if type(netblocks) == dict:  # single net block
-                    netblock = resp.json['ns4:pft']['net']['netBlocks']['netBlock']
+                    netblock = resp['ns4:pft']['net']['netBlocks']['netBlock']
                     cidr = netblock['cidrLength']['$']
                     description = netblock['description']['$']
                     endAddress = netblock['endAddress']['$']
                     startAddress = netblock['startAddress']['$']
                     nb = "%s/%s" % (startAddress, cidr)
                     self.output("%s is in netblock %s and belongs to %s" % (ip, nb, org))
-                    self.add_netblocks(nb)
+                    self.insert_netblocks(nb)
                     host_nb = nb
 
                 elif type(netblocks) == list:  # multiple netblocks
@@ -83,7 +84,7 @@ class Module(BaseModule):
                         startAddress = netblock['startAddress']['$']
                         nb = "%s/%s" % (startAddress, cidr)
                         self.output("%s is in netblock %s and belongs to %s" % (ip, nb, org))
-                        self.add_netblocks(nb)
+                        self.insert_netblocks(nb)
                         host_nb += "%s, " % nb
 
                     host_nb = re.sub(r', *$', '', host_nb)

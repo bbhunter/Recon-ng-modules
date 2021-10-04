@@ -10,7 +10,8 @@ class Module(BaseModule):
         'name': 'Baidu Hostname Enumerator',
         'author': 'Tim Tomes (@LaNMaSteR53)',
         'description': 'Harvests hosts from Baidu.com by using the \'site\' search operator. Updates the \'hosts\' table with the results.',
-        'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL ORDER BY domain'
+        'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL ORDER BY domain',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -33,14 +34,14 @@ class Module(BaseModule):
                 for sub in subs:
                     query += ' -site:(%s.%s)' % (sub, domain)
                 full_query = base_query + query
-                url = '%s?pn=%d&wd=%s' % (base_url, (page*nr), urllib.quote_plus(full_query))
+                url = '%s?pn=%d&wd=%s' % (base_url, (page*nr), urllib.parse.quote_plus(full_query))
                 # baidu errors out at > 2054 characters not including the protocol
                 if len(url) > 2061: 
                     url = url[:2061]
 
                 self.verbose('URL: %s' % (url))
                 # send query to search engine
-                resp = self.request(url, redirect=False)
+                resp = self.request('GET', url, redirect=False)
                 if resp.status_code != 200:
                     self.alert('Baidu has encountered an error. Please submit an issue for debugging.')
                     break
@@ -52,7 +53,7 @@ class Module(BaseModule):
                 # add subdomain to list if not already exists
                 p = '(?<=replace\(")\S*(?=")'
                 for site in sites:
-                    r = self.request(site, redirect=False)
+                    r = self.request('GET', site, redirect=False)
                     tmp = re.search(p,r.text)
                     tmp_site = tmp.group(0).split('/')[2].split('.' + domain)[0] 
                     
@@ -61,7 +62,7 @@ class Module(BaseModule):
                         new = True
                         host = '%s.%s' % (tmp_site, domain)
                         self.output('%s' % (host))
-                        self.add_hosts(host)
+                        self.insert_hosts(host)
                 if not new:
                     # exit if all subdomains have been found
                     if u'>\u4e0b\u4e00\u9875&gt;<' not in content or page > 10:

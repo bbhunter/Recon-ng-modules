@@ -9,6 +9,7 @@ class Module(BaseModule):
         'author': 'ScumSec 0x1414',
         'description': 'Harvests hosts and ports from the ZoomEye API by using the \'hostname\' search operator. Updates the \'hosts\' anf the \'ports\' tables with the results.',
         'query': 'SELECT DISTINCT domain FROM domains WHERE domain IS NOT NULL',
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -18,10 +19,10 @@ class Module(BaseModule):
             self.heading(domain, level=0)
             query = 'hostname:%s' % domain
             payload = {'query': query}
-            resp = self.request('https://api.zoomeye.org/host/search', method='GET', headers=headers, payload=payload)
+            resp = self.request('POST', 'https://api.zoomeye.org/host/search', headers=headers, json=payload)
             if resp.status_code == 200:
-                if 'matches' in resp.json.keys():
-                    for match in resp.json['matches']:
+                if 'matches' in resp.json().keys():
+                    for match in resp.json()['matches']:
                         port_info = match['portinfo']
                         geo_info = match['geoinfo']
                         host = port_info['hostname']
@@ -32,8 +33,8 @@ class Module(BaseModule):
                         country = geo_info['country']['names']['en']
                         latitude = geo_info['location']['lat']
                         longitude = geo_info['location']['lon']
-                        self.add_ports(ip_address=ip_address, host=host, port=port, protocol=protocol)
-                        self.add_hosts(host=host, ip_address=ip_address, region=region, country=country, latitude=latitude, longitude=longitude)
+                        self.insert_ports(ip_address=ip_address, host=host, port=port, protocol=protocol)
+                        self.insert_hosts(host=host, ip_address=ip_address, region=region, country=country, latitude=latitude, longitude=longitude)
                 else:
                     self.output('%s => No matches!' % domain)
             else:

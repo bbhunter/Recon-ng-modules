@@ -12,6 +12,7 @@ class Module(BaseModule):
         'comments': (
             'One request \ 10 seconds'
         ),
+        'version': '1.1',
     }
 
     def module_run(self, domains):
@@ -20,12 +21,12 @@ class Module(BaseModule):
             self.heading(domain, level=0)
             base_url = 'https://www.threatcrowd.org/searchApi/v2/domain/report/'
             payload = {'domain': domain}
-            resp = self.request(base_url, payload=payload)
+            resp = self.request('POST', base_url, json=payload)
             registrant_emails = []
             if resp.status_code == 200:
-                if resp.json['response_code'] == '1':
-                    if resp.json['emails']:
-                        for email in resp.json['emails']:
+                if resp.json()['response_code'] == '1':
+                    if resp.json()['emails']:
+                        for email in resp.json()['emails']:
                             if email.endswith(domain):
                                 self.output('%s => Registrant email found!' % email)
                                 registrant_emails.append(email)
@@ -42,13 +43,13 @@ class Module(BaseModule):
                 self.heading(registrant_email, level=0)
                 base_url = 'https://www.threatcrowd.org/searchApi/v2/email/report/'
                 payload = {'email': registrant_email}
-                resp = self.request(base_url, payload=payload)
+                resp = self.request('POST', base_url, json=payload)
                 if resp.status_code == 200:
-                    if resp.json['response_code'] == '1':
-                        if resp.json['domains']:
-                            for new_domain in resp.json['domains']:
+                    if resp.json()['response_code'] == '1':
+                        if resp.json()['domains']:
+                            for new_domain in resp.json()['domains']:
                                 if new_domain:
-                                    self.add_domains(new_domain)
+                                    self.insert_domains(new_domain)
                         else:
                             self.alert('%s => No new domains by registrant email!' % registrant_email)
                     else:

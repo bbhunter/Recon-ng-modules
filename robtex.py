@@ -12,6 +12,7 @@ class Module(BaseModule):
         'options': (
             ('restrict', True, True, 'restrict added hosts to current domains'),
         ),
+        'version': '1.1',
     }
     
     def module_run(self, hosts):
@@ -21,8 +22,8 @@ class Module(BaseModule):
         for ip_address in hosts:
             self.heading(ip_address, 0)
             url = 'https://freeapi.robtex.com/ipquery/{}'.format(ip_address)            
-            resp = self.request(url)
-            jsonobj = resp.json
+            resp = self.request('GET', url)
+            jsonobj = resp.json()
             if jsonobj['status'] != 'ok':
                 self.error(jsonobj['status'])
                 continue
@@ -31,6 +32,6 @@ class Module(BaseModule):
                 # apply restriction
                 if self.options['restrict'] and not re.search(regex, host):
                     continue
-                self.add_hosts(host)
-            self.add_companies(company=jsonobj['routedesc'])
-            self.add_netblocks(jsonobj['bgproute'])
+                self.insert_hosts(host)
+            self.insert_companies(company=jsonobj['routedesc'])
+            self.insert_netblocks(jsonobj['bgproute'])
