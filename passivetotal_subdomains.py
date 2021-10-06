@@ -30,7 +30,7 @@ class Module(BaseModule):
     def get_passivetotal_subdomains(self, query):
         pdns_results = self.query_passivetotal_api("/v2/enrichment/subdomains", query)
         results = []
-        for subdomain in pdns_results["subdomains"]:
+        for subdomain in pdns_results.get("subdomains", []):
             results.append(subdomain + "." + query)
         return results
 

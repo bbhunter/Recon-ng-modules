@@ -25,7 +25,7 @@ class Module(BaseModule):
         response = requests.get(url, auth=auth, json=data)
         data = response.json()
         res = []
-        if not data.has_key("results"):
+        if not data.get("results", False):
             self.error(data)
         for result in data.get("results", []):
             res.append(result["domain"])

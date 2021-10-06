@@ -26,7 +26,7 @@ class Module(BaseModule):
         response = requests.get(url, auth=auth, json=data)
         data = response.json()
         res = []
-        if not data.has_key("results"):
+        if not data.get("results", False):
             print(data)
         for result in data.get("results", []):
             try:
