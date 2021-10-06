@@ -19,7 +19,7 @@ class Module(BaseModule):
             )
             resp = self.request("GET", url)
             jsonobj = resp.json()
-            if jsonobj.has_key("Error"):
+            if jsonobj.get("Error", False):
                 self.error(jsonobj["Error"])
                 continue
             for x in jsonobj["data"]:

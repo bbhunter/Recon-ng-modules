@@ -18,7 +18,7 @@ class Module(BaseModule):
                 host
             )
             resp = self.request("GET", url)
-            jsonobj = resp.json
+            jsonobj = resp.json()
             for hostname in [x["hostname"] for x in jsonobj["passive_dns"]]:
                 self.insert_hosts(hostname, host)
                 self.output("'%s' successfully found." % (hostname))
@@ -29,7 +29,7 @@ class Module(BaseModule):
                 )
             )
             resp = self.request("GET", url)
-            jsonobj = resp.json
+            jsonobj = resp.json()
             for url in jsonobj["url_list"]:
                 self.insert_domains(domain=url["domain"])
                 self.output("'%s' successfully found." % (url["domain"]))
