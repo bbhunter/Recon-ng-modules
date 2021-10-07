@@ -76,13 +76,14 @@ cp censys_ip.py ~/.recon-ng/modules/recon/hosts-ports
 cp viewdns_ports.py ~/.recon-ng/modules/recon/hosts-ports
 
 mkdir -p ~/.recon-ng/modules/recon/hosts-hosts
-cp zoomeye_ip.py ~/.recon-ng/modules/recon/hosts-hosts
+cp farsight_ip.py ~/.recon-ng/modules/recon/hosts-hosts
 cp ipinfo.py ~/.recon-ng/modules/recon/hosts-hosts
 cp dnstrails.py ~/.recon-ng/modules/recon/hosts-hosts
 cp otx_pulse_ip.py   ~/.recon-ng/modules/recon/hosts-hosts
 cp otx_pulse_pdns.py ~/.recon-ng/modules/recon/hosts-hosts
 cp robtex.py ~/.recon-ng/modules/recon/hosts-hosts
 cp srvbrute.py ~/.recon-ng/modules/recon/hosts-hosts
+cp zoomeye_ip.py ~/.recon-ng/modules/recon/hosts-hosts
 
 mkdir -p ~/.recon-ng/modules/recon/netblocks-netblocks
 cp rdap.py ~/.recon-ng/modules/recon/netblocks-netblocks
