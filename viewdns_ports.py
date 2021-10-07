@@ -1,4 +1,4 @@
-import urllib
+from urllib.parse import urlencode
 
 import requests
 
@@ -27,11 +27,16 @@ class Module(BaseModule):
             params = {"key": key, "host": host, "output": "json"}
             params = urlencode(params)
             url = "%s?%s" % (base_url, params)
+            print(url)
             resp = self.request("GET", url)
-            if resp.status_code != 200 or resp.json is None:
+            if resp.status_code != 200:
                 continue
-            resp = resp.json()
-            for info in resp["respose"]["port"]:
+            try:
+                data = resp.json()
+            except:
+                self.error(resp.text)
+                return
+            for info in data["respose"]["port"]:
                 if info["status"] != "open":
                     continue
                 self.insert_ports(
