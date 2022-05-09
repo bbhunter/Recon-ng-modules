@@ -17,7 +17,7 @@ cp dnssoa.py ~/.recon-ng/modules/recon/domains-contacts
 
 mkdir -p ~/.recon-ng/modules/recon/companies-hosts
 cp shodan_org.py ~/.recon-ng/modules/recon/companies-hosts
-cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
+# cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
 cp certdb.py ~/.recon-ng/modules/recon/companies-hosts
 
 mkdir -p ~/.recon-ng/modules/recon/contacts-credentials
@@ -37,7 +37,7 @@ cp axfr.py ~/.recon-ng/modules/recon/domains-hosts
 cp mx-ip.py ~/.recon-ng/modules/recon/domains-hosts
 cp spf-ip.py ~/.recon-ng/modules/recon/domains-hosts
 cp threatcrowd_api.py ~/.recon-ng/modules/recon/domains-hosts
-cp censys_mx.py ~/.recon-ng/modules/recon/domains-hosts
+# cp censys_mx.py ~/.recon-ng/modules/recon/domains-hosts
 cp zoomeye_hostname.py ~/.recon-ng/modules/recon/domains-hosts
 cp dnsdumpster-query.py ~/.recon-ng/modules/recon/domains-hosts
 cp crt_sh.py ~/.recon-ng/modules/recon/domains-hosts
@@ -71,8 +71,8 @@ mkdir -p ~/.recon-ng/modules/recon/domains-ports
 cp fofa.py ~/.recon-ng/modules/recon/domains-ports
 
 mkdir -p ~/.recon-ng/modules/recon/hosts-ports
-cp censys_a.py ~/.recon-ng/modules/recon/hosts-ports
-cp censys_ip.py ~/.recon-ng/modules/recon/hosts-ports
+# cp censys_a.py ~/.recon-ng/modules/recon/hosts-ports
+# cp censys_ip.py ~/.recon-ng/modules/recon/hosts-ports
 cp viewdns_ports.py ~/.recon-ng/modules/recon/hosts-ports
 
 mkdir -p ~/.recon-ng/modules/recon/hosts-hosts
@@ -105,8 +105,6 @@ mkdir -p ~/.recon-ng/modules/probe/hosts-vulnerabilities/
 # cp tls_analyze.py  ~/.recon-ng/modules/probe/hosts-vulnerabilities/
 
 for key in `echo "bulkwhoisapi_key
-censysio_id
-censysio_secret
 certdb_key
 emailhunter_key
 fofa_email
