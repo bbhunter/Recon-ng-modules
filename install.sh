@@ -18,7 +18,6 @@ cp dnssoa.py ~/.recon-ng/modules/recon/domains-contacts
 mkdir -p ~/.recon-ng/modules/recon/companies-hosts
 cp shodan_org.py ~/.recon-ng/modules/recon/companies-hosts
 # cp censys_org.py ~/.recon-ng/modules/recon/companies-hosts
-cp certdb.py ~/.recon-ng/modules/recon/companies-hosts
 
 mkdir -p ~/.recon-ng/modules/recon/contacts-credentials
 cp hacked_emails.py  ~/.recon-ng/modules/recon/contacts-credentials
@@ -105,7 +104,6 @@ mkdir -p ~/.recon-ng/modules/probe/hosts-vulnerabilities/
 # cp tls_analyze.py  ~/.recon-ng/modules/probe/hosts-vulnerabilities/
 
 for key in `echo "bulkwhoisapi_key
-certdb_key
 emailhunter_key
 fofa_email
 fofa_key
